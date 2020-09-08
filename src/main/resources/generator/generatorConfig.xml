@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+<!--    不生成example代码,且一个表对应一个实体-->
+    <context id="MySqlContext" targetRuntime="Mybatis3Simple" defaultModelType="flat">
+        <property name="beginningDelimiter" value=""/>
+        <property name="endingDelimiter" value=""/>
+<!--        日期和注释配置-->
+        <commentGenerator>
+            <property name="suppressDate" value="true"/>
+            <property name="addRemarkComments" value="true"/>
+        </commentGenerator>
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/mybatis_study?serverTimezone=UTC&amp;useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false"
+                        userId="root"
+                        password="root">
+<!--            不生成mysql信息-->
+        <property name="nullCatalogMeansCurrent" value="true"/>
+        </jdbcConnection>
+
+<!--        生成实体的路径-->
+        <javaModelGenerator targetPackage="com.mybatis.use.gen.model" targetProject="src\main\java">
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+<!--        生成xml的位置-->
+        <sqlMapGenerator targetPackage="com.mybatis.use.gen.mapper" targetProject="src\main\resources\com\mybatis\use\gen\mapper"/>
+<!--        接口与xm分离-->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.mybatis.use.gen.mapper" targetProject="src\main\java"/>
+<!--        数据库中的所有表，自增ID-->
+        <table tableName="%">
+            <generatedKey column="id" sqlStatement="MySql"/>
+        </table>
+    </context>
+</generatorConfiguration>

@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mybatis.use.mapper.rbac.SysUserMapper">
+    <resultMap id="sysUserMap" type="SysUser">
+        <id property="id" column="id"/>
+        <result property="userName" column="user_name"/>
+        <result property="userPassword" column="user_password"/>
+        <result property="userEmail" column="user_email"/>
+        <result property="userInfo" column="user_info"/>
+        <result property="headImg" column="head_img" jdbcType="BLOB"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="column">
+        id,
+        user_name,
+        user_password,
+        user_email,
+        user_info,
+        head_img,
+        create_time
+    </sql>
+    <insert id="insertSysUser">
+        insert sys_user(
+        id,
+        user_name userName,
+        user_password userPassword,
+        user_email userEmail,
+        user_info userInfo,
+        head_img headImg,
+        create_time createTime
+        )
+        values (#{id},#{userName},#{userPassword},#{userEmail},#{userInfo},#{headImg,jdbcType=BLOB},
+        #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertByKey" useGeneratedKeys="true" keyProperty="id">
+        insert sys_user(
+        user_name,
+        user_password,
+        user_email,
+        user_info,
+        head_img,
+        create_time
+        )
+        values (#{userName},#{userPassword},#{userEmail},#{userInfo},#{headImg,jdbcType=BLOB},
+        #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_user(
+        user_name,user_password,
+        <if test="userEmail != null and userEmail != ''">
+            user_email,
+        </if>
+        user_info,
+        head_img,
+        create_time
+        )values (
+        #{userName},#{userPassword},
+        <if test="userEmail != null and userEmail !=''">
+            #{user_email},
+        </if>
+        #{userInfo},#{headImg,jdbcType=BLOB},
+        #{createTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+    <insert id="insertList" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_user(
+        user_name,
+        user_password,
+        user_email,
+        user_info,
+        head_img,
+        create_time
+        )values
+        <foreach collection="list" item="user" separator=",">
+            (
+            #{user.userName},#{user.userPassword},#{user.userEmail},#{user.userInfo},
+            #{user.headImg,jdbcType=BLOB},#{user.createTime,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+    <update id="updateById">
+        update sys_user
+        set
+        user_name = #{userName},
+        user_password = #{userPassword},
+        user_email = #{userEmail},
+        user_info = #{userInfo},
+        head_img = #{headImg,jdbcType=BLOB},
+        create_time = #{createTime,jdbcType=TIMESTAMP}
+        where id = #{id}
+    </update>
+    <update id="updateByIdSelective">
+        update sys_user
+        set
+        <if test="userName != null and userName != ''">
+        user_name = #{userName},
+        </if>
+        <if test="userPassword != null and userPassword != ''">
+        user_password = #{userPassword},
+        </if>
+        <if test="userEmail != null and userEmail != ''">
+        user_email = #{userEmail},
+        </if>
+        <if test="userInfo != null and userInfo != ''">
+        user_info = #{userInfo},
+        </if>
+        <if test="headImg != null">
+        head_img = #{headImg,jdbcType=BLOB},
+        </if>
+        <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        </if>
+        id = #{id}
+        where id = #{id}
+    </update>
+    <update id="updateByMap">
+        update sys_user
+        set
+        <foreach collection="_parameter" item="val" index="key" separator=",">
+            ${key} = #{val}
+        </foreach>
+        where id = #{id}
+    </update>
+    <delete id="deleteById">
+        delete from sys_user where id = #{id}
+    </delete>
+    <delete id="deleteById2">
+        delete from sys_user where id = #{id}
+    </delete>
+    <select id="selectById" resultMap="sysUserMap">
+        select
+        <include refid="column"/>
+         from sys_user where id = #{id}
+    </select>
+    <select id="selectAllUser" resultType="com.mybatis.use.model.rbac.SysUser">
+        select
+        <include refid="column"/>
+        from sys_user
+    </select>
+    <select id="selectRoleByUserId" resultType="com.mybatis.use.model.rbac.SysRole">
+        select
+        r.id,
+        r.role_name roleName,
+        r.enabled,
+        r.create_by createBy,
+        r.create_time createTime
+        from sys_user u
+        inner join sys_user_role ur on u.id = ur.user_id
+        inner join sys_role r on ur.user_id = r.id
+        where u.id = #{id}
+    </select>
+    <select id="selectRoleByUserIdAndRoleEnabled" resultType="com.mybatis.use.model.rbac.SysRole">
+        select
+        r.id,
+        r.role_name roleName,
+        r.enabled,
+        r.create_by createBy,
+        r.create_time createTime
+        from sys_user u
+        inner join sys_user_role ur on u.id = ur.user_id
+        inner join sys_role r on ur.role_id = r.id
+        where u.id = #{arg0} and r.enabled = #{arg1}
+    </select>
+    <select id="selectByUser" resultType="com.mybatis.use.model.rbac.SysUser">
+        select
+        <include refid="column"/>
+        from sys_user
+        where 1=1
+        <if test="userName != null and userName != ''">
+            and user_name like concat('%',#{userName},'%')
+        </if>
+        <if test="userEmail != null and userEmail != ''">
+            and user_email = #{userEmail}
+        </if>
+    </select>
+    <select id="selectByIdOrUsername" resultType="com.mybatis.use.model.rbac.SysUser">
+        select
+        <include refid="column"/>
+        from sys_user
+        where 1=1
+        <choose>
+            <when test="id != null">
+                and id = #{id}
+            </when>
+            <when test="userName != null and userName != ''">
+                and user_name = #{userName}
+            </when>
+            <otherwise>
+                and 1=2
+            </otherwise>
+        </choose>
+    </select>
+    <select id="selectByIdList" resultType="com.mybatis.use.model.rbac.SysUser">
+        select
+        <include refid="column"/>
+        from sys_user
+        where id in
+        <foreach collection="list" open="(" close=")" separator="," item="id" index="i">
+            #{id}
+        </foreach>
+    </select>
+    <select id="selectUserAndRoleById" resultType="com.mybatis.use.model.rbac.SysUser">
+    select
+      u.id,u.user_name userName,u.user_password userPassword,u.user_email userEmail,
+      u.user_info userInfo,u.head_img headImg,u.create_time createTime,
+      r.id "sysRole.id",r.role_name "sysRole.roleName",r.enabled "sysRole.enabled",
+      r.create_by "sysRole.createBy",r.create_time "sysRole.createTime"
+    from sys_user u inner join sys_user_role ur on u.id = ur.user_id
+                    inner join sys_role r on ur.role_id = r.id
+    where u.id = #{id}
+  </select>
+</mapper>

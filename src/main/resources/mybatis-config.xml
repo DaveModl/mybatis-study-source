@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <setting name="logPrefix" value="dao."/>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <setting name="aggressiveLazyLoading" value="false"/>
+    </settings>
+    <typeAliases>
+        <package name="com.mybatis.use.model.country"/>
+        <package name="com.mybatis.use.model.rbac"/>
+    </typeAliases>
+    <typeHandlers>
+<!--        枚举映射器-->
+        <typeHandler javaType="com.mybatis.use.model.constant.Enabled" handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"/>
+<!--        自定义类型-->
+        <typeHandler javaType="com.mybatis.use.model.constant.NewEnabled" handler="com.mybatis.use.handler.EnumHandler"/>
+    </typeHandlers>
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="UNPOOLED">
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                <property name="url" value="jdbc:mysql://localhost:3306/mybatis_study?serverTimezone=UTC&amp;useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false&amp;allowPublicKeyRetrieval=true"/>
+                <property name="username" value="root"/>
+                <property name="password" value="root"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <package name="com.mybatis.use.mapper"/>
+        <package name="com.mybatis.use.gen.mapper"/>
+    </mappers>
+</configuration>
